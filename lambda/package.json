@@ -1,0 +1,25 @@
+{
+  "name": "kis-lambda",
+  "version": "1.0.0",
+  "description": "Lambdas for kis",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bryan-laipple/keep-it-secret.git"
+  },
+  "author": "Bryan Laipple",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bryan-laipple/keep-it-secret/issues"
+  },
+  "homepage": "https://github.com/bryan-laipple/keep-it-secret#readme",
+  "devDependencies": {
+    "aws-sdk": "^2.218.1",
+    "babel-cli": "^6.26.0",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-preset-env": "^1.6.1"
+  }
+}
