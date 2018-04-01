@@ -1,22 +1,17 @@
 'use strict';
-const sha256 = require('crypto-js/sha256');
 const aes = require('crypto-js/aes');
 const utf8 = require('crypto-js/enc-utf8');
 
 const encryptV1 = (data, secret) => {
-  const meta = { version: 1, hash: 'sha256' };
+  const meta = { version: 1 };
   const json = JSON.stringify(data);
-  const val = aes.encrypt(json, sha256(secret).toString());
+  const val = aes.encrypt(json, secret);
   return { meta, data: val.toString() };
 };
 
 const decryptV1 = (meta, data, secret) => {
-  if (meta.hash !== 'sha256') {
-    return {};
-  }
-
   try {
-    const bytes = aes.decrypt(data, sha256(secret).toString());
+    const bytes = aes.decrypt(data, secret);
     const json = bytes.toString(utf8);
     return JSON.parse(json);
   } catch (err) {

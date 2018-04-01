@@ -1,21 +1,29 @@
 {
   "name": "kis-client",
   "version": "1.0.0",
+  "private": true,
   "description": "React based web-client for Amazon Cognito",
   "main": "index.js",
   "repository": "https://github.com/bryan-laipple/keep-it-secret",
   "author": "Bryan Laipple",
   "license": "MIT",
   "scripts": {
-    "test": "mocha"
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
   },
   "dependencies": {
+    "react": "^16.3.0",
+    "react-dom": "^16.3.0",
+    "react-scripts": "1.1.1",
     "aws-amplify": "^0.2.9",
     "aws-amplify-react": "^0.1.34",
     "crypto-js": "^3.1.9-1"
   },
   "devDependencies": {
     "chai": "^4.1.2",
+    "create-react-app": "^1.5.2",
     "mocha": "^5.0.5"
   }
 }
