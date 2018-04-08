@@ -1,4 +1,5 @@
 'use strict'; // eslint-disable-line strict
+
 const aes = require('crypto-js/aes');
 const utf8 = require('crypto-js/enc-utf8');
 

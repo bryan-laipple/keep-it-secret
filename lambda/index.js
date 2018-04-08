@@ -2,7 +2,7 @@
 
 const processEvent = (event, context) => () => console.log(`TODO process event`);
 
-const success = callback => () => callback(null, `Success`);
+const success = callback => res => callback(null, res);
 const failure = callback => err => callback(err);
 
 exports.handler = (event, context, callback) =>

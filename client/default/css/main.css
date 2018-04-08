@@ -1,0 +1,30 @@
+/* colors from http://paletton.com/#uid=73w0u0k2Ar94dcO45g00iSF0dY7 */
+
+body {
+    background-color: #80868B;
+}
+
+p {
+    font-family: 'Comic Sans MS', 'Comic Sans', cursive
+}
+
+.image {
+    width: 100%;
+    object-fit: cover;
+    margin-top: 50px;
+}
+
+.door {
+    background-color: #E5E6E7;
+}
+
+.outer-container {
+    text-align: center;
+    margin: 10px;
+    width: 100%;
+}
+
+.image-container {
+    margin: 0 auto;
+    width: 50%;
+}

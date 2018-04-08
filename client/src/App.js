@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
+import './App.css';
 import SimpleSignIn from './SimpleSignIn';
-import { encrypt, decrypt } from './cipher';
 import get from 'lodash.get';
 
 import {
@@ -15,29 +15,8 @@ import {
 } from 'react-bootstrap';
 
 import { withAuthenticator } from 'aws-amplify-react';
-import Amplify, { Auth } from 'aws-amplify';
-import aws_exports from './aws-exports';
-import config from './config.json';
-
-Amplify.configure(aws_exports);
-
-const CUSTOM_ATTR = get(config, 'custom_attribute.name');
-const MAX_LENGTH = get(config, 'custom_attribute.max_length');
-
-const chunkString = (str, chuckSize) => {
-  if (str.length <= chuckSize) {
-    return [str];
-  }
-  const size = Math.ceil(str.length / chuckSize);
-  const ret  = new Array(size);
-  let offset = 0;
-
-  for(let i = 0; i < size; ++i, offset += chuckSize) {
-    ret[i] = str.substring(offset, offset + chuckSize);
-  }
-
-  return ret;
-};
+import { chunkString, fetchData, saveData } from './utils'
+import { encrypt, decrypt } from './cipher';
 
 class App extends Component {
   constructor(props, context) {
@@ -60,13 +39,9 @@ class App extends Component {
     this.onDataChange = this.onDataChange.bind(this);
   }
 
-  componentDidMount() {
-    Auth.userAttributes(this.state.authData)
-      .then(Auth.attributesToObject)
-      .then(({ [CUSTOM_ATTR]: json }) => {
-        const encrypted = json ? JSON.parse(json) : {};
-        this.setState({ encrypted });
-      })
+  async componentDidMount() {
+    const encrypted = await fetchData(this.state);
+    this.setState({ encrypted });
   }
 
   onKeyChange(e) {
@@ -104,35 +79,12 @@ class App extends Component {
 
   setFeedback({ status, text }) {
     this.setState({feedback: {status, text}});
-    setTimeout(() => this.setState({feedback: null}), 5000);
+    setTimeout(() => this.setState({feedback: null}), 3500);
   }
 
-  onSave() {
-    const { encrypted } = this.state;
-    if (encrypted) {
-      const val = JSON.stringify(encrypted);
-      if (val.length > MAX_LENGTH) {
-        this.setFeedback({
-          status: 'error',
-          text: 'Data exceeds size limit and cannot be saved'
-        });
-      } else {
-        Auth.updateUserAttributes(this.state.authData, {[CUSTOM_ATTR]: val})
-          .then(() => {
-            this.setFeedback({
-              status: 'success',
-              text: 'Succeeded in securely saving data'
-            });
-          })
-          .catch(err => {
-            console.error(err.message || err);
-            this.setFeedback({
-              status: 'error',
-              text: 'An error occurred attempting to securely save data'
-            });
-          });
-      }
-    }
+  async onSave() {
+    const feedback = await saveData(this.state);
+    this.setFeedback(feedback);
   }
 
   renderEncrypted() {
@@ -167,7 +119,7 @@ class App extends Component {
       <div className="app-wrapper">
         <Panel className="app-content" bsStyle="primary">
           <Panel.Heading>
-            <Panel.Title componentClass="h3">Keep it Secret, Keep it Safe</Panel.Title>
+            <Panel.Title>Keep it Secret, Keep it Safe</Panel.Title>
           </Panel.Heading>
           <Panel.Body>
             <Form inline>
