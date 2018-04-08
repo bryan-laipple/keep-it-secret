@@ -1,5 +1,4 @@
-
-import React, { Component } from 'react';
+import React from 'react';
 import { I18n } from 'aws-amplify';
 import {
   SignIn,
@@ -13,7 +12,7 @@ import {
 // SignIn w/o the footer and federated buttons
 class SimpleSignIn extends SignIn {
   showComponent() {
-    const { authState, hide, onStateChange } = this.props;
+    const { hide } = this.props;
     if (hide && hide.includes(SignIn)) { return null; }
 
     return (

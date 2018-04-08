@@ -15,7 +15,7 @@ const decryptV1 = (meta, data, secret) => {
     const json = bytes.toString(utf8);
     return JSON.parse(json);
   } catch (err) {
-    return {};
+    // do nothing
   }
 };
 
@@ -27,8 +27,6 @@ const decrypt = ({ meta, data }, secret) => {
   if (meta && meta.version === 1) {
     return decryptV1(meta, data, secret);
   }
-
-  return {};
 };
 
 module.exports = {

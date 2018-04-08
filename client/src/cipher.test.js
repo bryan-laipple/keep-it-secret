@@ -36,19 +36,19 @@ describe('cipher', function() {
       const decrypted = decrypt(encrypted, secret);
       decrypted.should.deep.equal(originalData);
     });
-    it('should return empty object for incorrect secret', function() {
+    it('should return nothing for incorrect secret', function() {
       const decrypted = decrypt(encrypted, 'not-the' + secret);
-      decrypted.should.deep.equal({});
+      (!!decrypted).should.be.false;
     });
-    it('should return empty object for no meta', function() {
+    it('should return nothing for no meta', function() {
       const { meta, ...sansMeta } = encrypted;
       const decrypted = decrypt(sansMeta, secret);
-      decrypted.should.deep.equal({});
+      (!!decrypted).should.be.false;
     });
-    it('should return empty object for unknown version', function() {
+    it('should return nothing for unknown version', function() {
       const meta = { ...encrypted.meta, version: 0 };
       const decrypted = decrypt({ ...encrypted, meta }, secret);
-      decrypted.should.deep.equal({});
+      (!!decrypted).should.be.false;
     });
   });
 });
