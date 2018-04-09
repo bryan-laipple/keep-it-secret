@@ -3,7 +3,7 @@
 transpileDir=services
 temp=ziptemp
 zip_file=Lambda.zip
-zip_contents=(index.js $transpileDir node_modules)
+zip_contents=(index.js defaults.js config.json $transpileDir node_modules)
 
 function transpile {
     yarn install
@@ -15,6 +15,8 @@ function package {
     cp package.json ./${temp}/
     cp yarn.lock ./${temp}/
     cp index.js ./${temp}/
+    cp defaults.js ./${temp}/
+    cp config.json ./${temp}/
     cd $temp
     yarn install --prod
     chmod -R a+r ./node_modules

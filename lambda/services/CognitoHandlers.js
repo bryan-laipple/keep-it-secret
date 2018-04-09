@@ -5,21 +5,23 @@ const config = require('../config.json');
 
 const ses = new AWS.SES({apiVersion: '2010-12-01'});
 
-const onAdminCreateUser = async (req, res) => {
+const onAdminCreateUser = async event => {
 
 };
 
-const onSignUp = async (req, res) => {
+const onSignUp = async event => {
 
 };
 
-const onAuthenticated = async (req, res) => {
+const onAuthenticated = async event => {
+  console.log(`User authenticated: User-Pool ${event.userPoolId}, UserId: ${event.userName}`);
+  const { request } = event;
   const subject = 'KISKIS alert';
   const body = `A login to your KISKIS account was successful on ${new Date()}`;
   const Charset = 'UTF-8';
   const params = {
     Destination: {
-      ToAddresses: [req.userAttributes.email]
+      ToAddresses: [request.userAttributes.email]
     },
     Message: {
       Body: { Text: { Charset, Data: body }
@@ -44,7 +46,7 @@ module.exports = async (event, context) => {
   let response;
   const handler = handlers[event.triggerSource];
   if (handler) {
-    response = await handler(event.request, event.response);
+    await handler(event);
   }
-  return response;
+  return event;
 };

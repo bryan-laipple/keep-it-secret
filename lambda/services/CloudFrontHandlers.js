@@ -5,6 +5,24 @@ const get = require('lodash.get');
 const { responseBody } = require('../defaults');
 const config = require('../config.json');
 
+const responseHeaders = headers => {
+  headers = headers || {};
+
+  headers['cache-control'] = [{
+    key: 'Cache-Control',
+    value: 'max-age=100'
+  }];
+  headers['content-type'] = [{
+    key: 'Content-Type',
+    value: 'text/html'
+  }];
+  headers['content-encoding'] = [{
+    key: 'Content-Encoding',
+    value: 'UTF-8'
+  }];
+  return headers;
+};
+
 const secureHeaders = headers => {
   headers = headers || {};
   headers['strict-transport-security'] = [{
@@ -14,7 +32,7 @@ const secureHeaders = headers => {
 
   headers['content-security-policy'] = [{
     key:   'Content-Security-Policy',
-    value: "default-src 'none'; img-src 'self'; script-src 'self'; style-src 'self'; object-src 'none'"
+    value: "default-src 'none'; img-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; object-src 'none'"
   }];
 
   headers['x-content-type-options'] = [{
@@ -39,32 +57,48 @@ const secureHeaders = headers => {
   return headers;
 };
 
-const restricted = req => config.allowed.find(a => a !== req.uri);
+const allowed = req => config.allowed.find(a => a === req.uri);
 
-const invalid = (req, {path, expected}) => get(req, path) !== process.env[expected];
+const invalid = (req, {path, expected}) => {
+  let result = true;
+  const val = get(req, path);
+  if (val) {
+    for (let i = 0; i < val.length; i++) {
+      if (val[i].value.indexOf(expected) >= 0) {
+        result = false;
+        break;
+      }
+    }
+  }
+  return result;
+};
 
 const denied = req => config.validations.find(v => invalid(req, v));
 
-const shouldBlock = req => restricted(req) && denied(req);
+const shouldBlock = req => !allowed(req) && denied(req);
 
-const onViewerRequest = (event, context) => {
+const onViewerRequest = async (event, context) => {
   const { request } = event.Records[0].cf;
   let result = request;
   if (shouldBlock(request)) {
     result = {
-      status: 200,
-      headers: secureHeaders(),
-      bodyEncoding: 'text',
-      body: responseBody,
+      status: '200',
+      statusDescription: 'OK',
+      headers: responseHeaders(secureHeaders()),
+      body: responseBody
     };
   }
   return result;
 };
 
-const onViewerResponse = (event, context) => {
+const onViewerResponse = async (event, context) => {
   const { response } = event.Records[0].cf;
   const { headers } = response;
   secureHeaders(headers);
+  headers['content-security-policy'] = [{
+    key: 'Content-Security-Policy',
+    value: "default-src 'none'; img-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; connect-src 'self' https://cognito-idp.us-west-2.amazonaws.com https://cognito-identity.us-west-2.amazonaws.com; object-src 'none'"
+  }];
   return response;
 };
 
